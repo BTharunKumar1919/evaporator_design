@@ -101,7 +101,3 @@ pytest -q
 6. Add meaningful reference cases and regression tests for every accepted equation/correlation.
 
 The app intentionally keeps all calculations outside the GUI so the equations can be tested and reviewed independently.
-
-## Windows one-click setup
-
-On Windows, run `setup_windows.bat` once, then launch the application with `run_app.bat`. The first setup requires access to the Python package index to install Streamlit and the other dependencies. Alternatively, use the manual PowerShell commands above.
