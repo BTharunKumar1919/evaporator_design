@@ -1,0 +1,42 @@
+{
+  "description": "Illustrative demonstration case only; not a validated design.",
+  "process_inputs": {
+    "mass_flow_kg_s": 1.0,
+    "inlet_temperature_C": 25.0,
+    "boiling_temperature_C": 80.0,
+    "cp_kJ_kgK": 4.18,
+    "latent_heat_kJ_kg": 2300.0,
+    "target_vapor_fraction": 0.2,
+    "hot_in_temperature_C": 120.0,
+    "hot_out_temperature_C": 120.0,
+    "overall_U_W_m2K": 1200.0,
+    "LMTD_correction_factor": 1.0,
+    "design_margin": 1.1,
+    "process_density_kg_m3": 1000.0,
+    "process_viscosity_Pa_s": 0.001,
+    "allowable_process_dp_kPa": 100.0,
+    "hot_mass_flow_kg_s": 0.5,
+    "hot_density_kg_m3": 950.0,
+    "hot_viscosity_Pa_s": 0.0002,
+    "hot_hydraulic_diameter_m": 0.02,
+    "hot_flow_area_m2": 0.05,
+    "hot_flow_length_m": 2.0,
+    "allowable_hot_dp_kPa": 100.0,
+    "heat_sensitive": false,
+    "fouling_or_solids": false,
+    "natural_circulation_preferred": true
+  },
+  "geometry": {
+    "tube_count": 100,
+    "tube_od_mm": 19.0,
+    "tube_id_mm": 16.0,
+    "tube_length_m": 3.0,
+    "tube_passes": 2,
+    "shell_diameter_m": 0.5,
+    "bundle_diameter_m": 0.45,
+    "baffle_spacing_m": 0.2,
+    "liquid_level_m": 0.3,
+    "circulation_ratio": 3.0,
+    "static_elevation_m": 2.0
+  }
+}

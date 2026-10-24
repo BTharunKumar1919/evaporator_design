@@ -1,0 +1,56 @@
+"""Lightweight input/result schemas for the evaporator-design starter project.
+
+The first version deliberately uses dictionaries at the GUI boundary so inputs
+are easy to inspect and modify. This module defines canonical exchanger names
+and default values used by the calculation layer.
+"""
+from __future__ import annotations
+
+EXCHANGERS = {
+    "Falling Film Evaporator": "falling_film",
+    "Forced Circulation Evaporator": "forced_circulation",
+    "Vertical Thermosyphon Reboiler": "vertical_thermosyphon",
+    "Horizontal Thermosyphon Reboiler": "horizontal_thermosyphon",
+    "Kettle Reboiler": "kettle_reboiler",
+}
+
+DEFAULT_PROCESS_INPUTS = {
+    "mass_flow_kg_s": 1.0,
+    "inlet_temperature_C": 25.0,
+    "boiling_temperature_C": 80.0,
+    "cp_kJ_kgK": 4.18,
+    "latent_heat_kJ_kg": 2300.0,
+    "target_vapor_fraction": 0.20,
+    "hot_in_temperature_C": 120.0,
+    "hot_out_temperature_C": 120.0,
+    "overall_U_W_m2K": 1200.0,
+    "LMTD_correction_factor": 1.0,
+    "design_margin": 1.10,
+    "process_density_kg_m3": 1000.0,
+    "process_viscosity_Pa_s": 0.001,
+    "allowable_process_dp_kPa": 100.0,
+    "hot_mass_flow_kg_s": 0.50,
+    "hot_density_kg_m3": 950.0,
+    "hot_viscosity_Pa_s": 0.0002,
+    "hot_hydraulic_diameter_m": 0.02,
+    "hot_flow_area_m2": 0.05,
+    "hot_flow_length_m": 2.0,
+    "allowable_hot_dp_kPa": 100.0,
+    "heat_sensitive": False,
+    "fouling_or_solids": False,
+    "natural_circulation_preferred": True,
+}
+
+DEFAULT_GEOMETRY = {
+    "tube_count": 100,
+    "tube_od_mm": 19.0,
+    "tube_id_mm": 16.0,
+    "tube_length_m": 3.0,
+    "tube_passes": 2,
+    "shell_diameter_m": 0.50,
+    "bundle_diameter_m": 0.45,
+    "baffle_spacing_m": 0.20,
+    "liquid_level_m": 0.30,
+    "circulation_ratio": 3.0,
+    "static_elevation_m": 2.0,
+}
