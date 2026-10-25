@@ -33,7 +33,7 @@ with st.sidebar:
     st.caption("The physics and pressure-drop models are intentionally preliminary. Do not use results for final design or safety approval.")
 
 st.title("Evaporator Design & Rating")
-st.write("A working end-to-end scaffold for five evaporator/reboiler types. Use the default case first to check the workflow; then replace the placeholder correlations with your course-approved methods.")
+st.write("A preliminary design and rating tool for five evaporator/reboiler types. It follows the uploaded course algorithms where equations and inputs are reproducible, reports equipment-specific checks, and flags correlations or hydraulic calculations that need engineering review.")
 
 if st.session_state.step == 1:
     st.header("Step 1 — Choose calculation mode")

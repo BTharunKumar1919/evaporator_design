@@ -29,4 +29,4 @@ Run selected type's sizing module
                     END
 ```
 
-The selection ranking and five type-specific models are placeholders pending equation/correlation review.
+The selection ranking and five equipment-specific calculation paths follow the uploaded course algorithms where source equations are reproducible. Correlation limitations, unavailable two-phase losses and worked-example inconsistencies are documented in `docs/all_algorithms_review_and_worked_examples.md`.

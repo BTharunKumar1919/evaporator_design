@@ -33,8 +33,10 @@ def calculate_thermal_basis(p: dict) -> dict:
     tb = float(p["boiling_temperature_C"])
     hfg = float(p["latent_heat_kJ_kg"])
     x = float(p["target_vapor_fraction"])
+    vapor_rate_override = float(p.get("vaporization_rate_kg_s", 0.0) or 0.0)
+    vapor_rate = vapor_rate_override if vapor_rate_override > 0 else mdot * x
     sensible_W = mdot * kJ_to_J(cp) * max(tb - tin, 0.0)
-    latent_W = mdot * x * kJ_to_J(hfg)
+    latent_W = vapor_rate * kJ_to_J(hfg)
     required_W = sensible_W + latent_W
     lmtd, warnings = lmtd_for_constant_boiling_temperature(
         p["hot_in_temperature_C"], p["hot_out_temperature_C"], tb
@@ -46,6 +48,8 @@ def calculate_thermal_basis(p: dict) -> dict:
     return {
         "sensible_duty_W": sensible_W,
         "latent_duty_W": latent_W,
+        "vaporization_rate_kg_s_used": vapor_rate,
+        "vaporization_rate_override_kg_s": vapor_rate_override if vapor_rate_override > 0 else None,
         "required_duty_W": required_W,
         "LMTD_K": lmtd,
         "overall_U_W_m2K": u,

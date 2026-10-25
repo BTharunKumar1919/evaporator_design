@@ -1,15 +1,22 @@
-# Flowchart review notes for the first software pass
+# Flowchart review notes
 
-The initial algorithm images are useful reference material, but the project code uses the following corrected top-level routing:
+The app's top-level route follows the requested course workflow:
 
-1. The user selects **Sizing** or **Rating** first.
-2. **Sizing** collects process requirements, validates inputs, runs the preliminary equipment-selection heuristic, and then routes to the selected exchanger's sizing function.
-3. **Rating** bypasses equipment selection. The user chooses the exchanger type, enters operating conditions and existing geometry, and the selected rating function runs.
-4. Each of the five exchanger types has distinct sizing, rating, thermal, hydraulic, and check modules. At present, the modules share simple common calculations and annotate the omitted type-specific physics.
-5. Both paths end in a common results page with calculation trace, warnings, and exportable text/CSV summaries.
+1. User selects **Sizing** or **Rating**.
+2. Sizing collects process requirements, validates inputs, runs the explicit equipment-selection gates, and then lets the user confirm or override the highest-ranked equipment type.
+3. Rating bypasses selection and evaluates the user-selected equipment type with the entered geometry held fixed.
+4. Each of the five equipment types has its own sizing/rating entry points and type-dependent checks. Common calculation orchestration is used to avoid duplicating shared duty, area and resistance equations.
+5. The results page reports a calculation trace, source-specific checks and warnings, and exportable text/CSV summaries.
 
-## Corrections intentionally deferred
+## Algorithms represented
 
-The detailed flowcharts contain type-specific correlations and loop gates that should be transcribed only after the team agrees on the equation definitions, units, required variables, and reference source. This version does not silently invent those missing details. It instead uses marked placeholders for two-phase heat transfer, thermosyphon circulation, falling-film wetting, kettle pool boiling, pump curves, vapor disengagement, and code/mechanical checks.
+- **Equipment selection:** viscosity/slurry/fouling/high-flux priority, heat sensitivity or low-approach preference, high exit vapour fraction and pressure-extreme gates, followed by natural-circulation/headroom/orientation rules. The result is a ranking with review cautions, not a certified hard rejection.
+- **Forced circulation:** sensible plus latent duty; mixed sensible/latent LMTD as used in its examples; tube-side Reynolds/Prandtl/Nusselt and Dittus–Boelter HTC screen; resistance network; tube-count area gate; single-phase tube-friction and pump-power estimate.
+- **Horizontal thermosyphon:** duty and area iteration; entered pool-boiling HTC with bundle/mixture factors; natural-circulation screen; CHF and 70%-of-CHF check; preliminary shell/bundle disengagement check.
+- **Vertical thermosyphon:** duty and area iteration; entered effective boiling HTC; Zivi void-fraction/mixture-density and static-pressure screen; optional user-supplied loop-loss balance; CHF check and exit-quality gate.
+- **Kettle:** pool-boiling/bundle calculation; area gate; CHF check; fixed-geometry shell disengagement rule.
+- **Falling film:** film wetting-rate/Reynolds/Prandtl/regime HTC calculation; area iteration; Palen dry-out and minimum-wetting checks; distributor-head and approximate Wallis flooding screens.
 
-The current equipment-selection ranking is a transparent heuristic to demonstrate the GUI route only. It should be replaced with the actual gates and constraints from the course's approved algorithm.
+## Corrections and unresolved source issues
+
+The shared engine deliberately does not imply that every formula is a complete or independently validated correlation. The uploaded Mostinski equation/substitution is not reproducible as written; the Chen example does not provide enough details to independently calculate all terms; natural-circulation friction and acceleration losses are unavailable unless supplied; and several numerical examples have small arithmetic or gate inconsistencies. The program exposes such limitations rather than concealing them. Refer to `all_algorithms_review_and_worked_examples.md` for the documented discrepancies and numerical checks.

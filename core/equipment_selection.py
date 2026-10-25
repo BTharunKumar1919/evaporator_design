@@ -36,7 +36,8 @@ def preprocess_selection_inputs(p: dict) -> dict:
     th_out = float(p.get("hot_out_temperature_C", 0.0))
     rho_l = float(p.get("process_density_kg_m3", 0.0))
     hstat = float(p.get("static_elevation_m", 0.0))
-    vapor_rate = mdot * x
+    vapor_rate_override = _get(p, "vaporization_rate_kg_s", 0.0)
+    vapor_rate = vapor_rate_override if vapor_rate_override > 0 else mdot * x
     recirculation_ratio = (1.0 - x) / x if x > 0 else None
     sensible = mdot * cp * max(tb - tin, 0.0)
     latent = vapor_rate * hfg
@@ -47,6 +48,7 @@ def preprocess_selection_inputs(p: dict) -> dict:
     return {
         "exit_vapor_fraction_xe": x,
         "vapor_rate_kg_s": vapor_rate,
+        "vapor_rate_override_used": vapor_rate_override > 0,
         "recirculation_ratio_R": recirculation_ratio,
         "sensible_duty_kW": sensible / 1000.0,
         "latent_duty_kW": latent / 1000.0,
@@ -98,7 +100,7 @@ def recommend_equipment(p: dict) -> list[dict]:
     allow_dp = _get(p, "allowable_process_dp_kPa", 100.0)
 
     trace.append("PRE-PROCESSING")
-    trace.append(f"Exit vapor mass fraction xe = {x:.3f}; estimated vapor rate = {d['vapor_rate_kg_s']:.4g} kg/s.")
+    trace.append(f"Exit vapor mass fraction xe = {x:.3f}; vapor generation rate = {d['vapor_rate_kg_s']:.4g} kg/s" + (" (independent override)." if d.get("vapor_rate_override_used") else " (feed flow × xe)."))
     trace.append("Recirculation ratio R = (1 - xe)/xe = " + (f"{d['recirculation_ratio_R']:.3f}." if d['recirculation_ratio_R'] is not None else "undefined at xe = 0."))
     trace.append(f"Duty estimate Q = sensible + latent = {d['total_duty_kW']:.2f} kW ({q_mw:.3f} MW).")
     trace.append(f"Effective temperature approach ΔTeff = mean heating temperature - process boiling temperature = {dt:.2f} °C.")

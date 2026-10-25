@@ -13,6 +13,10 @@ def validate_process_inputs(p: dict) -> tuple[list[str], list[str]]:
         ("LMTD_correction_factor", "LMTD correction factor"),
         ("process_density_kg_m3", "Process density"),
         ("process_viscosity_Pa_s", "Process viscosity"),
+        ("process_thermal_conductivity_W_mK", "Process thermal conductivity"),
+        ("process_surface_tension_N_m", "Process surface tension"),
+        ("process_vapor_density_kg_m3", "Process vapor density"),
+        ("heating_htc_W_m2K", "Heating-side heat-transfer coefficient"),
         ("hot_mass_flow_kg_s", "Heating-medium mass flow"),
         ("hot_density_kg_m3", "Heating-medium density"),
         ("hot_viscosity_Pa_s", "Heating-medium viscosity"),
@@ -31,6 +35,12 @@ def validate_process_inputs(p: dict) -> tuple[list[str], list[str]]:
     x = float(p.get("target_vapor_fraction", -1))
     if not 0 <= x <= 1:
         errors.append("Target vapor fraction must lie between 0 and 1.")
+    try:
+        vapor_rate_override = float(p.get("vaporization_rate_kg_s", 0.0) or 0.0)
+        if vapor_rate_override < 0:
+            errors.append("Vaporization-rate override must be zero (derive from feed × xe) or greater.")
+    except (TypeError, ValueError):
+        errors.append("Vaporization-rate override must be numeric.")
 
     if float(p.get("design_margin", 0)) < 1:
         errors.append("Design margin must be at least 1.0.")
@@ -69,6 +79,12 @@ def validate_geometry(g: dict) -> tuple[list[str], list[str]]:
                 errors.append(f"{label} must be greater than zero.")
         except (KeyError, TypeError, ValueError):
             errors.append(f"{label} is missing or not numeric.")
+    if float(g.get("tube_pitch_ratio", 1.25)) < 1.05:
+        errors.append("Tube pitch / outside diameter must be at least 1.05 for this preliminary geometry screen.")
+    if float(g.get("distributor_hole_diameter_mm", 3.8)) <= 0:
+        errors.append("Distributor hole diameter must be positive.")
+    if float(g.get("distributor_discharge_coefficient", 0.62)) <= 0:
+        errors.append("Distributor discharge coefficient must be positive.")
     if float(g.get("tube_id_mm", 0)) >= float(g.get("tube_od_mm", 0)):
         errors.append("Tube inside diameter must be smaller than tube outside diameter.")
     if float(g.get("bundle_diameter_m", 0)) > float(g.get("shell_diameter_m", 0)):

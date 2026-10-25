@@ -1,13 +1,11 @@
-"""Preliminary validation/check adapters for Horizontal Thermosyphon Reboiler."""
-from core.validation import validate_process_inputs, validate_geometry
+"""Compatibility adapter exposing check results from the central Horizontal Thermosyphon Reboiler model."""
+from calculations.common.engineering_models import run_equipment_calculation
 
-MODEL_NOTES = ['PLACEHOLDER: horizontal thermosyphon circulation, two-phase boiling, and shell/tube-side distribution correlations are not implemented.', 'PRESSURE-DROP LIMITATION: the process-side result is not a thermosyphon circulation pressure-drop solution.']
+EXCHANGER_NAME = 'Horizontal Thermosyphon Reboiler'
 
-def run_checks(process_inputs: dict, geometry: dict) -> dict:
-    process_errors, process_warnings = validate_process_inputs(process_inputs)
-    geometry_errors, geometry_warnings = validate_geometry(geometry)
-    return {
-        "errors": process_errors + geometry_errors,
-        "warnings": process_warnings + geometry_warnings + list(MODEL_NOTES),
-        "scope": "Starter checks only; no code/standard-based mechanical or two-phase design verification.",
-    }
+def run_checks(process_inputs: dict, geometry: dict, mode: str = "Rating") -> dict:
+    result = run_equipment_calculation(mode, process_inputs, geometry, EXCHANGER_NAME)
+    return {"errors": result.get("errors", []), "warnings": result.get("warnings", []),
+            "checks": result.get("preliminary_checks", {}),
+            "engineering_calculations": result.get("engineering_calculations", {}),
+            "scope": "Source-aligned preliminary checks; detailed vendor/TEMA/ASME and two-phase verification remains required."}
