@@ -49,7 +49,7 @@ if st.session_state.step == 1:
 
 elif st.session_state.step == 2 and st.session_state.mode == "Sizing":
     st.header("Step 2 — Enter sizing requirements")
-    st.caption("The recommender uses only the qualitative preferences shown here. You can override its ranking in the next step.")
+    st.caption("The recommender applies the uploaded priority gates, calculates pre-processing quantities, then ranks candidates. You can select any exchanger in the next step; the recommendation is not a final engineering approval.")
     with st.form("sizing_process_form"):
         process = process_input_fields("szp", include_preferences=True)
         submitted = st.form_submit_button("Validate requirements and continue", type="primary")
@@ -101,17 +101,34 @@ elif st.session_state.step == 3:
     st.header("Step 3 — Equipment selection and preliminary geometry")
     process = st.session_state.process_inputs
     rankings = recommend_equipment(process)
-    st.markdown("### Preliminary recommendation ranking")
-    st.caption("This transparent rule-based ranking is only a placeholder based on the preferences entered. It does not replace the course flowchart or engineering judgment.")
+    st.markdown("### Pre-processing calculations")
+    prep = recommend_equipment.last_preprocessing
+    pc1, pc2, pc3 = st.columns(3)
+    pc1.metric("Estimated heat duty", f"{prep.get('total_duty_kW', 0):,.2f} kW")
+    pc2.metric("Exit vapor fraction xe", f"{prep.get('exit_vapor_fraction_xe', 0):.3f}")
+    pc3.metric("Static head", f"{prep.get('available_static_head_kPa', 0):.2f} kPa")
+    st.write(f"Recirculation ratio R: **{prep.get('recirculation_ratio_R') if prep.get('recirculation_ratio_R') is not None else 'undefined at xe = 0'}**")
+    st.write(f"Effective temperature approach ΔTeff: **{prep.get('effective_temperature_approach_C', 0):.2f} °C**")
+    with st.expander("Show priority-gate trace"):
+        for line in recommend_equipment.last_trace:
+            st.write("- " + line)
+    st.markdown("### Ranked equipment candidates")
+    st.caption("The score orders candidates using the uploaded priority gates and secondary preferences. ‘Review required’ means a gate/constraint cautions against that option; this is not a certified hard rejection. You remain free to select any type, but review its cautions first.")
     rank_df = pd.DataFrame([{
-        "Rank": r["rank"], "Exchanger": r["exchanger"], "Heuristic score": r["score"],
-        "Reason(s)": "; ".join(r["reasons"]),
+        "Rank": r["rank"], "Exchanger": r["exchanger"], "Score": r["score"],
+        "Status": r["status"], "Why ranked here": "; ".join(r["reasons"]),
+        "Cautions": "; ".join(r["cautions"]),
     } for r in rankings])
     st.dataframe(rank_df, use_container_width=True, hide_index=True)
     rank_options = [r["exchanger"] for r in rankings]
     with st.form("sizing_geometry_form"):
         exchanger = st.selectbox("Select exchanger module", rank_options, index=0,
-                                 help="The highest-ranked type is preselected, but you can choose any of the five types.")
+                                 format_func=lambda name: f"{name} — rank #{next(r['rank'] for r in rankings if r['exchanger'] == name)}",
+                                 help="The highest-ranked type is preselected, but you can choose any of the five types. Review cautions before overriding a priority gate.")
+        selected_row = next(r for r in rankings if r["exchanger"] == exchanger)
+        st.info(f"Selected: {exchanger}. Tube side: {selected_row['tube_side']}. Shell side: {selected_row['shell_side']}.")
+        if selected_row["cautions"]:
+            st.warning("Selection cautions: " + " ".join(selected_row["cautions"]))
         geometry = geometry_input_fields("szg", rating=False)
         submitted = st.form_submit_button("Run preliminary sizing", type="primary")
     if submitted:

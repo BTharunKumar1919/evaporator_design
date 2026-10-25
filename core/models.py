@@ -1,9 +1,4 @@
-"""Lightweight input/result schemas for the evaporator-design starter project.
-
-The first version deliberately uses dictionaries at the GUI boundary so inputs
-are easy to inspect and modify. This module defines canonical exchanger names
-and default values used by the calculation layer.
-"""
+"""Canonical names and defaults for the evaporator-design starter project."""
 from __future__ import annotations
 
 EXCHANGERS = {
@@ -15,6 +10,7 @@ EXCHANGERS = {
 }
 
 DEFAULT_PROCESS_INPUTS = {
+    # Generic thermal model inputs
     "mass_flow_kg_s": 1.0,
     "inlet_temperature_C": 25.0,
     "boiling_temperature_C": 80.0,
@@ -36,8 +32,27 @@ DEFAULT_PROCESS_INPUTS = {
     "hot_flow_area_m2": 0.05,
     "hot_flow_length_m": 2.0,
     "allowable_hot_dp_kPa": 100.0,
+    # Selection-algorithm inputs
+    "process_pressure_bar_abs": 3.5,
+    "heating_pressure_bar_abs": 10.0,
+    "critical_pressure_bar_abs": 0.0,  # zero disables near-critical gate until known
+    "boiling_range_C": 6.5,
+    "cold_fouling_factor_m2K_W": 0.0001,
+    "hot_fouling_factor_m2K_W": 0.0002,
+    "vertical_headroom_m": 6.0,
+    "horizontal_floor_space_m": 6.0,
+    "floor_space_restricted": False,
+    "static_elevation_m": 1.8,
+    "pump_permitted": True,
+    "estimated_natural_loop_dp_kPa": None,
     "heat_sensitive": False,
+    "thermally_unstable": False,
+    "crystallizing_slurry": False,
     "fouling_or_solids": False,
+    "high_heat_flux": False,
+    "heating_medium_corrosive": False,
+    "corrosive_toxic_process": False,
+    "foaming": False,
     "natural_circulation_preferred": True,
 }
 
